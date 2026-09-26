@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flight Board</title>
+  <link rel="stylesheet" href="vendor/fonts.css">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="stage">
+    <section class="board">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-icon" data-icon="takeoff"></div>
+          <h1 id="airport-name">BRISTOL AIRPORT</h1>
+          <div class="brand-code" id="airport-code">BRS</div>
+        </div>
+        <div class="weather">
+          <div class="wx-icon" id="wx-icon"></div>
+          <div>
+            <div class="wx-temp" id="wx-temp">--°C</div>
+            <div class="wx-text" id="wx-text"></div>
+          </div>
+        </div>
+        <div class="clock">
+          <div class="clock-time" id="clock-time">--:--</div>
+          <div class="clock-date" id="clock-date"></div>
+        </div>
+      </header>
+
+      <div class="panel row-flight">
+        <div class="dir">
+          <div class="dir-icon" id="dir-icon"></div>
+          <div class="dir-label" id="dir-label">&nbsp;</div>
+        </div>
+        <div class="flaps xl" id="flap-code"></div>
+        <div class="airline">
+          <img id="airline-logo" alt="" hidden>
+          <div class="airline-name" id="airline-name"></div>
+        </div>
+      </div>
+
+      <div class="panel row-place">
+        <div class="row-label" id="place-label">TO</div>
+        <div class="flaps lg" id="flap-place"></div>
+        <div class="flaps lg code" id="flap-iata"></div>
+      </div>
+
+      <!-- Phone layout only: both ends of the route. -->
+      <div class="panel row-route">
+        <div class="route-end">
+          <div class="route-label">FROM</div>
+          <div class="route-flaps"><div class="flaps sm" id="flap-from"></div><div class="flaps sm code" id="flap-from-iata"></div></div>
+        </div>
+        <div class="route-end">
+          <div class="route-label">TO</div>
+          <div class="route-flaps"><div class="flaps sm" id="flap-to"></div><div class="flaps sm code" id="flap-to-iata"></div></div>
+        </div>
+      </div>
+
+      <div class="panel row-info">
+        <div class="cell"><label id="lbl-sched">SCHEDULED</label><div class="val" id="t-sched">--:--</div></div>
+        <div class="cell"><label id="lbl-est">ESTIMATED</label><div class="val" id="t-est">--:--</div></div>
+        <div class="cell"><label>STATUS</label><div class="val" id="status">—</div></div>
+        <div class="cell wide"><label>AIRCRAFT</label><div class="val" id="ac-name">—</div></div>
+        <div class="cell"><label>REGISTRATION</label><div class="val" id="ac-reg">—</div></div>
+      </div>
+
+      <div class="panel stats">
+        <div class="stat-grid">
+          <div class="stat"><label id="s1-l">ALTITUDE</label><div id="s1-v">—</div></div>
+          <div class="stat"><label id="s2-l">GROUND SPEED</label><div id="s2-v">—</div></div>
+          <div class="stat"><label id="s3-l">DISTANCE TO GO</label><div id="s3-v">—</div></div>
+          <div class="stat"><label id="s4-l">EST. ARRIVAL</label><div id="s4-v">—</div></div>
+        </div>
+        <div class="progress">
+          <div class="track">
+            <div class="fill" id="prog-fill"></div>
+            <div class="prog-plane" id="prog-plane" data-icon="plane"></div>
+          </div>
+          <div class="progress-labels"><span id="prog-left"></span><span id="prog-right"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <div id="map"></div>
+      <div class="photo">
+        <img class="photo-img" id="photo-a" alt="">
+        <img class="photo-img" id="photo-b" alt="">
+        <div class="photo-empty" id="photo-empty">
+          <div class="photo-empty-icon" data-icon="plane"></div>
+          <span>No photo of this aircraft yet</span>
+        </div>
+        <div class="photo-shade"></div>
+        <div class="feed" id="feed"></div>
+        <div class="photo-credit" id="photo-credit"></div>
+      </div>
+    </aside>
+  </div>
+
+  <a class="gear" id="gear" href="settings.html" title="Settings" aria-label="Settings">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+  </a>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

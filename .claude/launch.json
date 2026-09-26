@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "flight-board",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server/index.js"],
+      "port": 8080
+    },
+    {
+      "name": "flight-board-multi",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["--env-file=.env.dev", "server/index.js"],
+      "port": 8080
+    }
+  ]
+}

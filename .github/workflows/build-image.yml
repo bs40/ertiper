@@ -1,0 +1,43 @@
+# Builds the multi-user flight board image and publishes it to the private GitHub Container
+# Registry (no local Docker needed). Deploying to bunny.net is done from your PC with deploy.ps1,
+# so the Bunny API key never leaves it.
+name: build-image
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Unit tests
+        run: npm ci --ignore-scripts && npm test
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/ertiper:latest
+            ghcr.io/${{ github.repository_owner }}/ertiper:${{ github.sha }}

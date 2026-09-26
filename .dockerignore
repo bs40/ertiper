@@ -1,0 +1,17 @@
+# Keep secrets, personal data and build clutter out of the image
+.env
+.env.*
+config.json
+deploy.config.json
+*.db
+*.db-*
+node_modules
+public/vendor
+installer
+test
+.git
+.github
+.claude
+Mockup.png
+mockup.png
+README.md

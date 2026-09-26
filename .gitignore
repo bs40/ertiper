@@ -1,0 +1,13 @@
+# Secrets and personal data: never commit
+.env
+.env.*
+config.json
+deploy.config.json
+
+# Build output and downloaded installer parts
+installer/vendor/
+installer/dist/
+public/vendor/
+node_modules/
+*.db
+*.db-*

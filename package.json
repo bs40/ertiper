@@ -1,0 +1,22 @@
+{
+    "name":  "ertiper-flight-board",
+    "version":  "1.0.4",
+    "description":  "Split-flap style board showing the flights visible from your window near Bristol Airport",
+    "type":  "module",
+    "private":  true,
+    "engines":  {
+                    "node":  "\u003e=22"
+                },
+    "scripts":  {
+                    "start":  "node server/index.js",
+                    "vendor":  "node scripts/vendor.mjs",
+                    "dev":  "node --env-file-if-exists=.env.dev server/index.js",
+                    "test":  "node --test test/"
+                },
+    "dependencies":  {
+                         "@fontsource/barlow":  "5.3.0",
+                         "@fontsource/barlow-condensed":  "5.3.0",
+                         "@libsql/client":  "0.18.0",
+                         "leaflet":  "1.9.4"
+                     }
+}

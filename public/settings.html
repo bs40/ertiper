@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Board Settings</title>
+  <link rel="stylesheet" href="vendor/fonts.css">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <header class="top">
+    <a class="back" href="./">← Back to board</a>
+    <h1>Board settings</h1>
+  </header>
+
+  <main class="layout">
+    <form class="controls" id="form" novalidate>
+      <section class="card">
+        <h2>Airport</h2>
+        <div class="search">
+          <input id="airport-q" type="search" autocomplete="off" placeholder="Search by name, city or code (e.g. BRS, Heathrow)" aria-label="Search airports" aria-controls="airport-results">
+          <ul id="airport-results" class="results" role="listbox" hidden></ul>
+        </div>
+        <div class="chosen" id="airport-chosen"></div>
+        <p class="note" id="timetable-note"></p>
+      </section>
+
+      <section class="card">
+        <h2>Which flights to show</h2>
+        <div class="modes" role="radiogroup" aria-label="Which flights to show">
+          <label class="mode" id="mode-visible-card">
+            <input type="radio" name="mode" value="visible">
+            <span class="mode-title">Planes I can see</span>
+            <span class="mode-desc" id="visible-desc">Aircraft inside your view on the map.</span>
+          </label>
+          <label class="mode">
+            <input type="radio" name="mode" value="arrivals">
+            <span class="mode-title">All arrivals</span>
+            <span class="mode-desc">Whatever is landing now, otherwise the next arrival.</span>
+          </label>
+          <label class="mode">
+            <input type="radio" name="mode" value="departures">
+            <span class="mode-title">All departures</span>
+            <span class="mode-desc">Whatever is taking off now, otherwise the next departure.</span>
+          </label>
+          <label class="mode">
+            <input type="radio" name="mode" value="all">
+            <span class="mode-title">All flights</span>
+            <span class="mode-desc">Arrivals and departures together.</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="card" id="view-card">
+        <h2>Your location &amp; view <span class="optional">optional</span></h2>
+        <p class="note" id="location-note">Click the map to place your location. Drag the pin to adjust it.</p>
+        <div class="coords">
+          <input id="coords" type="text" inputmode="decimal" placeholder="lat, lon  e.g. 51.40881, -2.77619" aria-label="Location as latitude, longitude">
+          <button type="button" class="btn ghost" id="clear-home">Remove location</button>
+        </div>
+
+        <div class="sliders" id="sliders">
+          <div class="slider">
+            <label for="bearing">Facing <b id="bearing-out"></b></label>
+            <input id="bearing" type="range" min="0" max="359" step="1">
+          </div>
+          <div class="slider">
+            <label for="width">View width <b id="width-out"></b></label>
+            <input id="width" type="range" min="10" max="360" step="5">
+          </div>
+          <div class="slider">
+            <label for="range">Distance <b id="range-out"></b></label>
+            <input id="range" type="range" min="1" max="30" step="0.5">
+          </div>
+          <div class="slider">
+            <label for="alt">Maximum height <b id="alt-out"></b></label>
+            <input id="alt" type="range" min="1000" max="20000" step="500">
+          </div>
+          <p class="note">Tip: drag the round handles on the map to turn and widen your view.</p>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button type="submit" class="btn primary" id="save">Save settings</button>
+        <span class="status" id="save-status" role="status"></span>
+      </div>
+
+      <!-- Multi-user edition only -->
+      <section class="card" id="account-card" hidden>
+        <h2>Account</h2>
+        <p class="note">Signed in as <b id="account-email"></b></p>
+        <div class="account-actions">
+          <a class="btn ghost" id="admin-link" href="admin.html" hidden>Admin</a>
+          <button type="button" class="btn ghost" id="signout">Sign out</button>
+          <button type="button" class="btn ghost" id="signout-all">Sign out everywhere</button>
+        </div>
+        <details class="danger-zone">
+          <summary>Delete my account</summary>
+          <p class="note">This permanently removes your account and settings.</p>
+          <div class="coords">
+            <input id="delete-password" type="password" autocomplete="current-password" placeholder="Your password" aria-label="Your password">
+            <button type="button" class="btn danger" id="delete-account">Delete account</button>
+          </div>
+        </details>
+      </section>
+    </form>
+
+    <div class="map-wrap">
+      <div id="map" aria-label="Map: click to set your location"></div>
+      <div class="legend">
+        <span><i class="dot home"></i>Your location</span>
+        <span><i class="dot apt"></i>Airport</span>
+        <span><i class="wedge"></i>Planes you can see</span>
+      </div>
+    </div>
+  </main>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script type="module" src="settings.js"></script>
+</body>
+</html>

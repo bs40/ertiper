@@ -1,0 +1,29 @@
+<!--
+  WinSW service definition. WinSW (installed alongside as ErtiperService.exe) runs the
+  bundled Node.js with the board server, restarts it if it stops, and keeps rolling logs.
+-->
+<service>
+  <id>Ertiper</id>
+  <name>Ertiper Flight Board</name>
+  <description>Collects live flight data for the Ertiper flight board. Pages are served by IIS at /ertiper.</description>
+  <executable>%BASE%\node\node.exe</executable>
+  <arguments>"%BASE%\server\index.js"</arguments>
+  <workingdirectory>%BASE%</workingdirectory>
+  <env name="ERTIPER_CONFIG" value="%ProgramData%\Ertiper\config.json" />
+  <env name="ERTIPER_HOST" value="127.0.0.1" />
+  <!-- Must match the forwarding rule in public\web.config (build.ps1 checks this). -->
+  <env name="ERTIPER_PORT" value="8095" />
+  <env name="NODE_ENV" value="production" />
+  <startmode>Automatic</startmode>
+  <delayedAutoStart>true</delayedAutoStart>
+  <onfailure action="restart" delay="10 sec" />
+  <onfailure action="restart" delay="30 sec" />
+  <onfailure action="restart" delay="60 sec" />
+  <resetfailure>1 hour</resetfailure>
+  <stoptimeout>10 sec</stoptimeout>
+  <logpath>%ProgramData%\Ertiper\logs</logpath>
+  <log mode="roll-by-size">
+    <sizeThreshold>5120</sizeThreshold>
+    <keepFiles>5</keepFiles>
+  </log>
+</service>
