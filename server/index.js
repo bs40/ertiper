@@ -2,6 +2,7 @@
 //   single-user  (no DATABASE_URL)  settings in config.json, no sign-in. Used by the Windows installer.
 //   multi-user   (DATABASE_URL set) email sign-up with admin approval, each user's settings stored
 //                                   encrypted in Bunny Database. Used on bunny.net Magic Containers.
+import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
 import { loadConfig, saveSettings as saveFileSettings, ROOT, CONFIG_FILE } from './config.js';
@@ -13,6 +14,7 @@ import { BoardManager } from './boards.js';
 import { HttpError, securityHeaders, sendJson, readJson, redirect, serveStatic, assertSameOrigin } from './web.js';
 
 const PUBLIC = path.join(ROOT, 'public');
+const VERSION = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8')).version;
 const env = process.env;
 const config = loadConfig();
 const multiUser = Boolean(env.DATABASE_URL);
@@ -140,7 +142,7 @@ async function route(req, res, url) {
   const user = multiUser ? await accounts.authenticate(req) : null;
 
   if (req.method === 'POST') assertSameOrigin(req, allowedOrigins);
-  if (pathname === '/api/health') return sendJson(res, 200, { ok: true });
+  if (pathname === '/api/health') return sendJson(res, 200, { ok: true, version: VERSION, commit: env.GIT_COMMIT ?? null });
 
   if (multiUser && (pathname.startsWith('/api/auth/') || pathname.startsWith('/api/account/') || pathname.startsWith('/api/admin/users'))) {
     if (await accounts.handle(req, res, url, user)) return;

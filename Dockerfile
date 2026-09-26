@@ -11,8 +11,11 @@ RUN mkdir -p public && node scripts/vendor.mjs
 
 # --- Runtime stage: production dependencies only, non-root ------------------------------------
 FROM node:24-alpine
+# The commit is reported by /api/health so deploy.ps1 can tell when a rollout has finished.
+ARG GIT_COMMIT=unknown
 ENV NODE_ENV=production \
-    PORT=8080
+    PORT=8080 \
+    GIT_COMMIT=$GIT_COMMIT
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force

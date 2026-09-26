@@ -3,6 +3,7 @@
 .env.*
 config.json
 deploy.config.json
+deploy.state.json
 
 # Build output and downloaded installer parts
 installer/vendor/

@@ -143,3 +143,64 @@ The version number comes from `package.json`.
 
 A Raspberry Pi with an RTL-SDR dongle running `readsb` or `tar1090` serves the same JSON format as
 adsb.lol. A local feed can be added as the first entry in `FEEDS` in `server/sources/adsb.js`.
+
+## Online edition (bunny.net, multi-user)
+
+The same code runs as a multi-user site when `DATABASE_URL` is set. Live at
+**https://mc-kzlo2h81g3.bunny.run**.
+
+### How it's hosted
+
+| Piece | Where |
+|---|---|
+| App (Node, always polling) | bunny.net **Magic Containers**, app `ertiper`, region UK, exactly 1 instance |
+| HTTPS / CDN | The container's pull zone. Force SSL on, TLS 1.0/1.1 off, smart cache off, cookies passed through |
+| Database | **Bunny Database** (libSQL), reached over HTTPS |
+| Image | Private GitHub repo `bs40/ertiper`; GitHub Actions runs the tests and builds `ghcr.io/bs40/ertiper:<commit>` |
+| Email | Resend (sign-up codes, approval requests) |
+
+### Accounts
+
+- **Sign-up:** email + password (at least 10 characters), confirmed by a 6-digit emailed code. You can
+  also sign in with "Email me a code instead".
+- **Approval:** new accounts wait for approval. The admin (`ertiper@bs40.com`) is approved
+  automatically, gets an email for each sign-up, and uses **admin.html** to approve, reject or remove.
+- **Per-user boards:** each user has their own airport, mode and location. An airport is only tracked
+  while someone has its board open.
+- **Timetable:** Aviationstack (free plan) with a shared cap of 95 requests/month. Each refresh costs
+  3 and happens at most every 12 hours per airport. AeroDataBox is used as well if `aerodatabox` is set
+  in `.env`.
+
+### Security
+
+| Area | What's done |
+|---|---|
+| Passwords | PBKDF2-SHA256, 600,000 iterations, random salt |
+| Stored personal data | Emails and settings (incl. home location) encrypted with AES-256-GCM, bound to their row. Emails looked up via a keyed HMAC. Keys derived from `DATA_KEY`. |
+| Sessions | HMAC-signed, `__Host-` HttpOnly Secure SameSite=Lax cookie, 30 days. "Sign out everywhere" and rejecting a user revoke all sessions. |
+| Sign-in abuse | Per-IP rate limits (sign-up, sign-in, codes, resend), per-account lockout after 10 failures, 5 attempts per code, 10-minute codes |
+| Account discovery | Sign-up and code sign-in behave identically for registered and unknown emails (decoys), same error for wrong email or password, equal-time password check |
+| Cross-site | JSON-only request bodies, Origin/Sec-Fetch-Site check on every POST, SameSite cookies, `frame-ancestors 'none'` |
+| Headers | Strict CSP (no inline code, everything self-hosted except map tiles and photos), HSTS, nosniff, X-Frame-Options DENY, Referrer-Policy, Permissions-Policy, COOP/CORP |
+| Container | Non-root user, read-only app files, production dependencies only, secrets only in environment variables |
+| Audit | Account events logged by user id (never email) |
+
+**Keep a safe copy of `.env`.** `DATA_KEY` (`data_key`) decrypts every user's email and location, and
+`SESSION_SECRET` signs sessions. Changing `SESSION_SECRET` signs everyone out; losing `DATA_KEY` loses
+the encrypted data.
+
+### Deploying an update
+
+```powershell
+git add -A; git commit -m "..."; git push   # GitHub tests and builds the image
+.\deploy.ps1                                 # waits for the build, rolls it out, confirms it's live
+.\deploy.ps1 -UpdateEnv                      # the same, and re-sends keys from .env
+```
+
+### Local development
+
+```powershell
+npm ci; npm run vendor; npm test
+npm run dev    # multi-user edition on http://localhost:8080 with a local database file (.env.dev)
+npm start      # single-user edition (config.json)
+```
