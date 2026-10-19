@@ -12,7 +12,11 @@ param(
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $root
-$git = @('-c', "safe.directory=%(prefix)///box/Share/Projects/Ertiper")
+# Git refuses to run in a checkout owned by another user (e.g. on a network share) unless the
+# directory is marked safe; UNC paths need the %(prefix) form.
+$gitRoot = $root -replace '\\', '/'
+if ($gitRoot.StartsWith('//')) { $gitRoot = "%(prefix)/$gitRoot" }
+$git = @('-c', "safe.directory=$gitRoot")
 
 # --- Settings -----------------------------------------------------------------------------------
 $envs = @{}

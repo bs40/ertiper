@@ -156,7 +156,7 @@ The same code runs as a multi-user site when `DATABASE_URL` is set. Live at
 | App (Node, always polling) | bunny.net **Magic Containers**, app `ertiper`, region UK, exactly 1 instance |
 | HTTPS / CDN | The container's pull zone. Force SSL on, TLS 1.0/1.1 off, smart cache off, cookies passed through |
 | Database | **Bunny Database** (libSQL), reached over HTTPS |
-| Image | Private GitHub repo `bs40/ertiper`; GitHub Actions runs the tests and builds `ghcr.io/bs40/ertiper:<commit>` |
+| Image | GitHub repo `bs40/ertiper`; GitHub Actions runs the tests and builds `ghcr.io/bs40/ertiper:<commit>` |
 | Email | Resend (sign-up codes, approval requests) |
 
 ### Accounts
